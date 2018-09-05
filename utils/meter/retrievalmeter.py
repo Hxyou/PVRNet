@@ -65,7 +65,7 @@ class RetrievalMAPMeter(meter.Meter):
         recalls = []
         ans = []
         for i in range(num):
-            scores = self.des_mat[:, i]
+            scores = self.dis_mat[:, i]
             targets = (lbls == lbls[i]).astype(np.uint8)
             sortind = np.argsort(scores, 0)[:self.topk]
             truth = targets[sortind]

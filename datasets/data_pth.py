@@ -20,6 +20,8 @@ def get_info(shapes_dir, isView=False):
                 names_dict[name].append(shape_dir)
             else:
                 names_dict[name] = [shape_dir]
+        for name, dirs in names_dict.items():
+            names_dict[name] = sorted(dirs)
     else:
         for shape_dir in shapes_dir:
             name = osp.split(shape_dir)[1].split('.')[0]
@@ -117,7 +119,7 @@ class view_data(Dataset):
 
 
 class pc_view_data(Dataset):
-    def __init__(self, pc_root, view_root, base_model_name=models.ALEXNET, status='train', pc_input_num=1024):
+    def __init__(self, pc_root, view_root, base_model_name=models.ALEXNET, status='train', pc_input_num=1024, view_idx=None):
         super(pc_view_data, self).__init__()
 
         self.status = status
@@ -125,6 +127,7 @@ class pc_view_data(Dataset):
         self.pc_list = []
         self.lbl_list = []
         self.pc_input_num = pc_input_num
+        self.view_idx = view_idx
 
         if base_model_name in (models.ALEXNET, models.VGG13, models.VGG13BN, models.VGG11BN):
             self.img_sz = 224
@@ -164,7 +167,11 @@ class pc_view_data(Dataset):
         print(f'{status} data num: {len(self.view_list)}')
 
     def __getitem__(self, idx):
-        views = [self.transform(Image.open(v)) for v in self.view_list[idx]]
+        if self.view_idx is None:
+            view_list = self.view_list[idx]
+        else:
+            view_list = [self.view_list[idx][_i] for _i in self.view_idx]
+        views = [self.transform(Image.open(v)) for v in view_list]
         lbl = self.lbl_list[idx]
         pc = np.load(self.pc_list[idx])[:self.pc_input_num].astype(np.float32)
         pc = normal_pc(pc)

@@ -51,13 +51,13 @@ class fc_layer(nn.Module):
 
 
 class transform_net(nn.Module):
-    def __init__(self, in_ch, K=3):
+    def __init__(self, in_ch, K=3, pc_input_num=1024):
         super(transform_net, self).__init__()
         self.K = K
         self.conv2d1 = conv_2d(in_ch, 64, 1)
         self.conv2d2 = conv_2d(64, 128, 1)
         self.conv2d3 = conv_2d(128, 1024, 1)
-        self.maxpool1 = nn.MaxPool2d(kernel_size=(1024, 1))
+        self.maxpool1 = nn.MaxPool2d(kernel_size=(pc_input_num, 1))
         self.fc1 = fc_layer(1024, 512, bn=True)
         self.fc2 = fc_layer(512, 256, bn=True)
         self.fc3 = nn.Linear(256, K*K)

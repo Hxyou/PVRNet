@@ -876,7 +876,7 @@ class PVNet2_v8(nn.Module):
 
 
 class PVNet2_v9(nn.Module):
-    def __init__(self, n_classes=40, init_weights=True):
+    def __init__(self, n_classes=40, init_weights=True, pc_input_num=1024):
         super(PVNet2_v9, self).__init__()
 
         self.fea_dim = 1024
@@ -892,7 +892,7 @@ class PVNet2_v9(nn.Module):
         self.mvcnn = BaseFeatureNet(base_model_name=config.base_model_name)
 
         # Point cloud net
-        self.trans_net = transform_net(6, 3)
+        self.trans_net = transform_net(6, 3, pc_input_num=pc_input_num)
         self.conv2d1 = conv_2d(6, 64, 1)
         self.conv2d2 = conv_2d(128, 64, 1)
         self.conv2d3 = conv_2d(128, 64, 1)

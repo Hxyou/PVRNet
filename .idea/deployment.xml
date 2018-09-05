@@ -2,10 +2,17 @@
 <project version="4">
   <component name="PublishConfigData" autoUpload="Always" serverName="youhaoxuan@166.111.80.51:22">
     <serverData>
+      <paths name="fengyifan@166.111.80.51:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/fengyifan/code/PVRNet" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="youhaoxuan@166.111.80.51:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/youhaoxuan/code/pvnet++_torch" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/youhaoxuan/code/pvnet++_torch_fyf" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>

@@ -9,7 +9,7 @@ from models import PVNet2, PVNet2_v4, PVNet2_v5, PVNet2_v7, PVNet2_v9
 from torch.utils.data import DataLoader
 from datasets import *
 
-def validate(val_loader, net, epoch):
+def validate(val_loader, net, epoch, print_pr=False):
     """
     validation for one epoch on the val set
     """
@@ -47,12 +47,14 @@ def validate(val_loader, net, epoch):
                   f'Batch Time {batch_time.value():.3f}\t'
                   f'Epoch Time {data_time.value():.3f}\t'
                   f'Prec@1 {prec.value(1):.3f}\t'
-                  f'Mean Class accuracy{(np.mean(np.array(total_right_class)/np.array(total_seen_class,dtype=np.float)))}')
+                  f'Mean Class accuracy {(np.mean(np.array(total_right_class)/np.array(total_seen_class,dtype=np.float))):.3f}')
 
     mAP = retrieval_map.mAP()
     print(f' instance accuracy at epoch {epoch}: {prec.value(1)} ')
     print(f' mean class accuracy at epoch {epoch}: {(np.mean(np.array(total_right_class)/np.array(total_seen_class,dtype=np.float)))} ')
     print(f' map at epoch {epoch}: {mAP} ')
+    if print_pr:
+        print(f'pr: {retrieval_map.pr()}')
     return prec.value(1), mAP
 
 
@@ -65,12 +67,14 @@ def main():
     val_dataset = pc_view_data(config.pv_net.pc_root,
                                config.pv_net.view_root,
                                status=STATUS_TEST,
-                               base_model_name=config.base_model_name)
+                               base_model_name=config.base_model_name,
+                               view_idx=config.pv_net.view_idx,
+                               pc_input_num=config.pv_net.pc_input_num)
     val_loader = DataLoader(val_dataset, batch_size=config.pv_net.train.batch_sz,
                             num_workers=config.num_workers,shuffle=True)
 
     # create model
-    net = PVNet2_v9()
+    net = PVNet2_v9(pc_input_num=config.pv_net.pc_input_num)
     net = torch.nn.DataParallel(net)
     net = net.to(device=config.device)
     optimizer_all = optim.SGD(net.parameters(), config.pv_net.train.all_lr,
@@ -86,15 +90,8 @@ def main():
     best_prec1 = checkpoint['best_prec1']
     resume_epoch = checkpoint['epoch']
 
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer_all, 5, 0.5)
-    criterion = nn.CrossEntropyLoss()
-    criterion = criterion.to(device=config.device)
-
-    # for p in net.module.feature.parameters():
-    #     p.requires_grad = False
-
     with torch.no_grad():
-        prec1, Map = validate(val_loader, net, resume_epoch)
+        prec1, Map = validate(val_loader, net, resume_epoch, print_pr=False)
 
     print('curr accuracy: ', prec1)
     print('best accuracy: ', best_prec1)
