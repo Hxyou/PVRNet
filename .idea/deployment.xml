@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="youhaoxuan@166.111.80.51:22">
+    <serverData>
+      <paths name="youhaoxuan@166.111.80.51:22">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/youhaoxuan/code/pvnet++_torch" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
